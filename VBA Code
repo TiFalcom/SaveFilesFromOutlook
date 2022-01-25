@@ -1,1 +1,29 @@
+Sub Copia()
+    Dim OutlookApp As Outlook.Application
+    Dim OutlookNamespace As Namespace
+    Dim Folder As MAPIFolder
+    Dim OutlookMail As Variant
+    Dim i As Integer
 
+    Set OutlookApp = New Outlook.Application
+    Set OutlookNamespace = OutlookApp.GetNamespace("MAPI")
+    Set Folder = OutlookNamespace.GetDefaultFolder(olFolderInbox).Folders("Testando")
+
+    i = 1
+    Range("A1").Value = "Titulo"
+    Range("B1").Value = "data_Hora"
+    Range("C1").Value = "remetente"
+    Range("D1").Value = "corpo"
+
+    For Each OutlookMail In Folder.Items
+      Range("A1").Offset(i, 0).Value = OutlookMail.Subject
+      Range("B1").Offset(i, 0).Value = OutlookMail.ReceivedTime
+      Range("C1").Offset(i, 0).Value = OutlookMail.SenderName
+      Range("D1").Offset(i, 0).Value = OutlookMail.Body
+      i = i + 1
+    Next OutlookMail
+
+    Set Folder = Nothing
+    Set OutlookNamespace = Nothing
+    Set OutlookApp = Nothing
+End Sub
