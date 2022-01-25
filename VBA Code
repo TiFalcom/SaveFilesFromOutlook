@@ -1,29 +1,42 @@
 Sub Copia()
     Dim OutlookApp As Outlook.Application
     Dim OutlookNamespace As Namespace
-    Dim Folder As MAPIFolder
+    Dim FolderOrigin As MAPIFolder
+    Dim FolderDestiny As MAPIFolder
     Dim OutlookMail As Variant
+    Dim Doc As Object
     Dim i As Integer
 
     Set OutlookApp = New Outlook.Application
     Set OutlookNamespace = OutlookApp.GetNamespace("MAPI")
-    Set Folder = OutlookNamespace.GetDefaultFolder(olFolderInbox).Folders("Testando")
-
-    i = 1
-    Range("A1").Value = "Titulo"
-    Range("B1").Value = "data_Hora"
-    Range("C1").Value = "remetente"
-    Range("D1").Value = "corpo"
-
-    For Each OutlookMail In Folder.Items
-      Range("A1").Offset(i, 0).Value = OutlookMail.Subject
-      Range("B1").Offset(i, 0).Value = OutlookMail.ReceivedTime
-      Range("C1").Offset(i, 0).Value = OutlookMail.SenderName
-      Range("D1").Offset(i, 0).Value = OutlookMail.Body
-      i = i + 1
+    Set FolderOrigin = OutlookNamespace.GetDefaultFolder(olFolderInbox).Folders("Extravio").Folders("Extravio Não Lido")
+    Set FolderDestiny = OutlookNamespace.GetDefaultFolder(olFolderInbox).Folders("Extravio").Folders("Extravio Lido")
+    
+    For Each OutlookMail In FolderOrigin.Items
+        Set Doc = CreateObject("htmlfile")
+        Doc.Open
+        Doc.Write OutlookMail.HTMLBody
+        Doc.Close
+        i = 0
+        j = 0
+        dados = Doc.all
+        For Each dado In Doc.getElementsByClassName("gmail-xl63")
+            If dado.innerText <> "" Then
+                Range("A1").Offset(j, i).Value = dado.innerText
+                i = i + 1
+                If i / 4 = 1 Then
+                    i = 0
+                    j = j + 1
+                End If
+            End If
+        Next dado
+        OutlookMail.UnRead = False
+        OutlookMail.Move FolderDestiny
     Next OutlookMail
-
-    Set Folder = Nothing
+    
+    Set Doc = Nothing
+    Set FolderOrigin = Nothing
+    Set FolderDestiny = Nothing
     Set OutlookNamespace = Nothing
     Set OutlookApp = Nothing
 End Sub
