@@ -10,6 +10,7 @@ Sub SaveTableFromEmail()
 
     Set OutlookApp = New Outlook.Application
     Set OutlookNamespace = OutlookApp.GetNamespace("MAPI")
+    'Validar nome das pastas
     Set FolderOrigin = OutlookNamespace.GetDefaultFolder(olFolderInbox).Folders("Extravio").Folders("Extravio Não Lido")
     Set FolderDestiny = OutlookNamespace.GetDefaultFolder(olFolderInbox).Folders("Extravio").Folders("Extravio Lido")
     
@@ -20,8 +21,8 @@ Sub SaveTableFromEmail()
         Doc.Close
         i = 0
         j = 0
-        dados = Doc.all
-        For Each bodyhtml In Doc.getElementsByClassName("gmail-xl63")
+
+        For Each bodyhtml In Doc.getElementsByClassName("MsoNormal") 'Validar esse class
             If bodyhtml.innerText <> "" Then
                 Range("A1").Offset(j, i).Value = bodyhtml.innerText
                 i = i + 1
@@ -41,3 +42,4 @@ Sub SaveTableFromEmail()
     Set OutlookNamespace = Nothing
     Set OutlookApp = Nothing
 End Sub
+
