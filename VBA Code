@@ -1,4 +1,4 @@
-Sub Copia()
+Sub SaveTableFromEmail()
     Dim OutlookApp As Outlook.Application
     Dim OutlookNamespace As Namespace
     Dim FolderOrigin As MAPIFolder
@@ -6,6 +6,7 @@ Sub Copia()
     Dim OutlookMail As Variant
     Dim Doc As Object
     Dim i As Integer
+    Dim j As Integer
 
     Set OutlookApp = New Outlook.Application
     Set OutlookNamespace = OutlookApp.GetNamespace("MAPI")
@@ -20,16 +21,16 @@ Sub Copia()
         i = 0
         j = 0
         dados = Doc.all
-        For Each dado In Doc.getElementsByClassName("gmail-xl63")
-            If dado.innerText <> "" Then
-                Range("A1").Offset(j, i).Value = dado.innerText
+        For Each bodyhtml In Doc.getElementsByClassName("gmail-xl63")
+            If bodyhtml.innerText <> "" Then
+                Range("A1").Offset(j, i).Value = bodyhtml.innerText
                 i = i + 1
                 If i / 4 = 1 Then
                     i = 0
                     j = j + 1
                 End If
             End If
-        Next dado
+        Next bodyhtml
         OutlookMail.UnRead = False
         OutlookMail.Move FolderDestiny
     Next OutlookMail
